@@ -6,27 +6,19 @@ const hashObj = require('hash-obj');
 module.exports = {
   name: 'ember-hbs-minifier',
 
-  _setupPreprocessorRegistry(app) {
-    let registry = app.registry;
-    let options = app.options || {};
-    let config = options['ember-hbs-minifier'] || {};
+  setupPreprocessorRegistry(type, registry) {
+    if (type === 'parent') {
+      let options = this.app.options || {};
+      let config = options['ember-hbs-minifier'] || {};
 
-    let HbsMinifierPlugin = require('./hbs-minifier-plugin').createRegistryPlugin(config);
-    registry.add('htmlbars-ast-plugin', {
-      name: 'hbs-minifier-plugin',
-      plugin: HbsMinifierPlugin,
-      baseDir() { return __dirname; },
-      cacheKey() { return cacheKeyForConfig(config); }
-    });
-  },
-
-  included(app) {
-    this._super.included.apply(this, arguments);
-    /*
-      Calling setupPreprocessorRegistry in included hook since app.options is not accessible
-      Refer PR: https://github.com/ember-cli/ember-cli/pull/7059
-    */
-    this._setupPreprocessorRegistry(app);
+      let HbsMinifierPlugin = require('./hbs-minifier-plugin').createRegistryPlugin(config);
+      registry.add('htmlbars-ast-plugin', {
+        name: 'hbs-minifier-plugin',
+        plugin: HbsMinifierPlugin,
+        baseDir() { return __dirname; },
+        cacheKey() { return cacheKeyForConfig(config); }
+      });
+    }
   }
 };
 
